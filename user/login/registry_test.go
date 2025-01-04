@@ -6,6 +6,7 @@ import (
 )
 
 func TestNewUserRegistry(t *testing.T) {
+	t.Parallel()
 	var r UserRegistry = NewUserRegistry()
 	if r == nil {
 		t.Fatal("user registry is nil")
@@ -13,6 +14,7 @@ func TestNewUserRegistry(t *testing.T) {
 }
 
 func TestUserRegistry_CreateUser(t *testing.T) {
+	t.Parallel()
 	registry := NewUserRegistry()
 	var userName user.Name = "testelio"
 	var email user.Email = "testelio@emailprovider.com"
@@ -35,6 +37,7 @@ func TestUserRegistry_CreateUser(t *testing.T) {
 }
 
 func TestUserRegistry_UserExists(t *testing.T) {
+	t.Parallel()
 	registry := NewUserRegistry()
 	var userName user.Name = "testelio"
 	var email user.Email = "testelio@email.com"
