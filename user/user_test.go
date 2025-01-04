@@ -113,3 +113,5 @@ func TestNew(t *testing.T) {
 		})
 	})
 }
+
+var _ User = user{}

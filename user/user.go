@@ -5,6 +5,7 @@ import (
 	"strings"
 )
 
+// New creates an immutable User object with a name and email.
 func New(n Name, e Email) (User, error) {
 	err := validateNameAndEmail(n, e)
 	if err != nil {
