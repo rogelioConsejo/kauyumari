@@ -11,6 +11,7 @@ func NewUserRegistry() UserRegistry {
 	}
 }
 
+// UserRegistry is an interface that defines the methods that a user registry should implement.
 type UserRegistry interface {
 	CreateUser(u user.User) error
 	UserExists(u user.User) bool
