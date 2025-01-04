@@ -2,33 +2,35 @@ package email
 
 import (
 	"errors"
-	"github.com/google/uuid"
-	"github.com/rogelioConsejo/kauyumari/user"
-	"github.com/rogelioConsejo/kauyumari/user/login"
+	"github.com/rogelioConsejo/golibs/helpers"
+	"github.com/rogelioConsejo/kauyumari/entities/user"
+	"github.com/rogelioConsejo/kauyumari/interactors/login"
 	"time"
 )
 
-func GetEmailMethod() login.AuthenticationMethod {
-	//TODO: inject Persistence and Client or pass it? Probably it is better to inject them so that nobody else needs to know about them. Otherwise we would need a third party to create the emailMethod.
+func GetEmailMethod(p Persistence, s Sender) login.AuthenticationMethod {
+
 	return &emailMethod{
-		expiration: 15 * time.Minute,
+		expiration:  15 * time.Minute,
+		emailSender: s,
+		persistence: p,
 	}
 }
 
 type emailMethod struct {
 	persistence Persistence
-	emailClient Client
+	emailSender Sender
 	expiration  time.Duration
 }
 
 func (e emailMethod) SetupAuthenticationAttempt(u user.User) error {
-	tk := Token(uuid.NewString())
+	tk := Token(helpers.MakeRandomString(10))
 	hashedToken := login.HashCredential(login.Credential(tk))
 	err := e.persistence.SaveLoginToken(u, HashedToken(hashedToken), time.Now().Add(e.expiration))
 	if err != nil {
 		return errors.Join(ErrSavingLoginToken, err)
 	}
-	err = e.emailClient.SendToken(u.Email(), tk)
+	err = e.emailSender.sendToken(u.Email(), tk)
 	if err != nil {
 		return errors.Join(ErrSendingLoginToken, err)
 	}

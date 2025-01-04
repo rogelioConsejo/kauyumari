@@ -1,15 +1,15 @@
 package email
 
 import (
-	"github.com/rogelioConsejo/kauyumari/user"
-	"github.com/rogelioConsejo/kauyumari/user/login"
+	"github.com/rogelioConsejo/kauyumari/entities/user"
+	"github.com/rogelioConsejo/kauyumari/interactors/login"
 	"testing"
 	"time"
 )
 
 func TestGetEmailMethod(t *testing.T) {
 	t.Parallel()
-	var m login.AuthenticationMethod = GetEmailMethod()
+	var m login.AuthenticationMethod = GetEmailMethod(getSpyPersistence(), getSpyEmailClient())
 	if m == nil {
 		t.Error("GetEmailMethod should return an authentication method")
 	}
@@ -28,9 +28,9 @@ func TestGetEmailMethod(t *testing.T) {
 
 func TestEmailMethod_SetupAuthenticationAttempt(t *testing.T) {
 	t.Parallel()
-	var m login.AuthenticationMethod = GetEmailMethod()
+	var m login.AuthenticationMethod = GetEmailMethod(getSpyPersistence(), getSpyEmailClient())
 	m.(*emailMethod).persistence = getSpyPersistence()
-	m.(*emailMethod).emailClient = getSpyEmailClient()
+	m.(*emailMethod).emailSender = getSpyEmailClient()
 	u, err := user.New("test", "test@mail.com")
 	if err != nil {
 		t.Fatalf("error creating user entity: %v", err)
@@ -64,7 +64,7 @@ func TestEmailMethod_SetupAuthenticationAttempt(t *testing.T) {
 		})
 	})
 	t.Run("it should send the login token to the user's email using an email client", func(t *testing.T) {
-		sentEmails := m.(*emailMethod).emailClient.(*spyEmailClient).sent
+		sentEmails := m.(*emailMethod).emailSender.(*spyEmailClient).sent
 		if len(sentEmails[u.Email()]) < 1 {
 			t.Error("no emails have been sent")
 		}
@@ -75,9 +75,7 @@ func TestEmailMethod_SetupAuthenticationAttempt(t *testing.T) {
 
 func TestEmailMethod_Authenticate(t *testing.T) {
 	t.Parallel()
-	var m login.AuthenticationMethod = GetEmailMethod()
-	m.(*emailMethod).persistence = getSpyPersistence()
-	m.(*emailMethod).emailClient = getSpyEmailClient()
+	var m login.AuthenticationMethod = GetEmailMethod(getSpyPersistence(), getSpyEmailClient())
 	u, err := user.New("test", "test@mail.com")
 	if err != nil {
 		t.Fatalf("error creating user entity: %v", err)
@@ -87,7 +85,7 @@ func TestEmailMethod_Authenticate(t *testing.T) {
 		t.Fatalf("unexpected error %s", err.Error())
 	}
 	t.Run("it should return true if the correct token is used", func(t *testing.T) {
-		tokens := m.(*emailMethod).emailClient.(*spyEmailClient).sent[u.Email()]
+		tokens := m.(*emailMethod).emailSender.(*spyEmailClient).sent[u.Email()]
 		lastToken := tokens[len(tokens)-1]
 		authenticated, authErr := m.Authenticate(u, login.Credential(lastToken))
 		if authErr != nil {
@@ -117,7 +115,7 @@ func TestEmailMethod_Authenticate(t *testing.T) {
 	})
 }
 
-func getSpyEmailClient() Client {
+func getSpyEmailClient() Sender {
 	return &spyEmailClient{
 		sent: make(map[user.Email][]Token),
 	}
@@ -127,7 +125,7 @@ type spyEmailClient struct {
 	sent map[user.Email][]Token
 }
 
-func (c *spyEmailClient) SendToken(email user.Email, tk Token) error {
+func (c *spyEmailClient) sendToken(email user.Email, tk Token) error {
 	c.sent[email] = append(c.sent[email], tk)
 	return nil
 }

@@ -1,7 +1,7 @@
 package login
 
 import (
-	"github.com/rogelioConsejo/kauyumari/user"
+	"github.com/rogelioConsejo/kauyumari/entities/user"
 	"testing"
 )
 

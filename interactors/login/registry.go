@@ -2,7 +2,7 @@ package login
 
 import (
 	"errors"
-	"github.com/rogelioConsejo/kauyumari/user"
+	"github.com/rogelioConsejo/kauyumari/entities/user"
 )
 
 func NewUserRegistry() UserRegistry {

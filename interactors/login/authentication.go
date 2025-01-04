@@ -1,6 +1,8 @@
 package login
 
-import "github.com/rogelioConsejo/kauyumari/user"
+import (
+	"github.com/rogelioConsejo/kauyumari/entities/user"
+)
 
 // AuthenticationMethod is an interface that defines the methods that an authentication method should implement.
 //
