@@ -30,12 +30,12 @@ To keep the scope small, we will focus on the following features:
 ### MUST
 - [ ] add user registry persistence + implementation
 - [ ] email authentication method persistence implementation
-- [ ] associate user with authentication method
-- [ ] login Access using user's authentication method
+- [ ] login Email confirmation (it should be similar to the email authentication method, but it should be a different
+method, as it should be used to confirm the email address, not to authenticate the user, maybe we can extract some
+common code)
+- [x] login Access using default authentication method
 - [ ] login Doorman
-- [ ] login Email confirmation (it should be similar to the email authentication method, but it should be a different 
-  method, as it should be used to confirm the email address, not to authenticate the user, maybe we can extract some
-  common code)
+- [x] add default authentication method
 - [ ] SendGrid integration implementation
 - [ ] admin access to add, edit and delete courses
 - [ ] list available courses
@@ -55,3 +55,4 @@ and will need to extend the system, so it may not be as trivial as it seems)
 - [ ] add sms/whatsapp authentication method
 - [ ] add SSO authentication method
 - [ ] a bunch of other things
+- [ ] associate user with authentication method on the access component

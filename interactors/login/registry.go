@@ -18,7 +18,8 @@ type UserRegistry interface {
 }
 
 type userRegistry struct {
-	users map[user.Name]user.User
+	users                       map[user.Name]user.User
+	defaultAuthenticationMethod AuthenticationMethod
 }
 
 func (ur userRegistry) CreateUser(u user.User) error {

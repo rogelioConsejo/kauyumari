@@ -9,7 +9,6 @@ import (
 )
 
 func GetEmailMethod(p Persistence, s Sender) login.AuthenticationMethod {
-
 	return &emailMethod{
 		expiration:  15 * time.Minute,
 		emailSender: s,
