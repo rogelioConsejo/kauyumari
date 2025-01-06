@@ -4,7 +4,11 @@ import "testing"
 
 func TestSecret_Hash(t *testing.T) {
 	var s Secret = "some secret"
-	var hs HashedSecret = s.Hash()
+	var hs HashedSecret
+	hs, err := s.Hash()
+	if err != nil {
+		t.Fatalf("Secret.Hash should not return an error, but got %v", err)
+	}
 	if hs == "" {
 		t.Errorf("HashedSecret should not be empty")
 	}
@@ -15,7 +19,11 @@ func TestSecret_Hash(t *testing.T) {
 
 func TestHashedSecret_Compare(t *testing.T) {
 	var s Secret = "some secret"
-	var hs HashedSecret = s.Hash()
+	var hs HashedSecret
+	hs, err := s.Hash()
+	if err != nil {
+		t.Fatalf("Secret.Hash should not return an error, but got %v", err)
+	}
 	if !hs.Compare(s) {
 		t.Fatal("HashedSecret.Compare should return true")
 	}
@@ -27,8 +35,9 @@ func TestHashedSecret_Compare(t *testing.T) {
 
 type Key Secret
 
-func (k Key) Hash() HashedKey {
-	return HashedKey(Secret(k).Hash())
+func (k Key) Hash() (HashedKey, error) {
+	hk, err := Secret(k).Hash()
+	return HashedKey(hk), err
 }
 
 type HashedKey HashedSecret
@@ -39,7 +48,11 @@ func (h HashedKey) Compare(k Key) bool {
 
 func TestSecretType(t *testing.T) {
 	var k Key = "some key"
-	var hk HashedKey = k.Hash()
+	var hk HashedKey
+	hk, err := k.Hash()
+	if err != nil {
+		t.Fatalf("Key.Hash should not return an error, but got %v", err)
+	}
 	if hk == "" {
 		t.Errorf("HashedKey should not be empty")
 	}
