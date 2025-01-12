@@ -28,15 +28,19 @@ To keep the scope small, we will focus on the following features:
 # Next steps
 ## For the MVP
 ### MUST
-- [ ] add user registry persistence + implementation
+#### User registration
+- [ ] add user registry persistence implementation
 - [ ] email authentication method persistence implementation
+- [ ] SendGrid integration implementation
+
+- [ ] add user registry persistence abstraction
 - [ ] login Email confirmation (it should be similar to the email authentication method, but it should be a different
 method, as it should be used to confirm the email address, not to authenticate the user, maybe we can extract some
 common code)
 - [x] login Access using default authentication method
-- [ ] login Doorman
+- [ ] login DoorLock 
 - [x] add default authentication method
-- [ ] SendGrid integration implementation
+#### Courses
 - [ ] admin access to add, edit and delete courses
 - [ ] list available courses
 - [ ] enroll in a course
