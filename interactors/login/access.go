@@ -2,6 +2,7 @@ package login
 
 import (
 	"errors"
+	"github.com/rogelioConsejo/golibs/helpers"
 	"github.com/rogelioConsejo/kauyumari/entities/user"
 )
 
@@ -11,9 +12,11 @@ func NewAccess(dam AuthenticationMethod) Access {
 	}
 }
 
+type AccessToken Credential
+
 type Access interface {
 	PrepareAuthentication(user.User) error
-	PerformAuthentication(user.User, Credential) (bool, error)
+	PerformAuthentication(user.User, Credential) (AccessToken, error)
 }
 
 type access struct {
@@ -28,12 +31,20 @@ func (a access) PrepareAuthentication(u user.User) error {
 	return nil
 }
 
-func (a access) PerformAuthentication(u user.User, credential Credential) (bool, error) {
-	authenticated, err := a.defaultAuthenticationMethod.Authenticate(u, credential)
+func (a access) PerformAuthentication(u user.User, credential Credential) (AccessToken, error) {
+	isValid, err := a.defaultAuthenticationMethod.Authenticate(u, credential)
 	if err != nil {
-		return false, errors.Join(ErrPerformingAuthentication, err)
+		return "", errors.Join(ErrPerformingAuthentication, err)
 	}
-	return authenticated, nil
+	if !isValid {
+		return "", nil
+	}
+	atk := generateKey()
+	return atk, nil
+}
+
+func generateKey() AccessToken {
+	return AccessToken(helpers.MakeRandomString(10))
 }
 
 var ErrPreparingAuthenticationAttempt = errors.New("error preparing authentication attempt")
